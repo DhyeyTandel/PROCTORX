@@ -83,7 +83,7 @@ export default function ProctorMainWindow() {
                     yaw: String((Math.trunc(result.rotation.yaw * 100) - 10)).padEnd(FACE_NOT_FOUND_MESSAGE.length, " "),
                     roll: String(Math.trunc(result.rotation.roll * 100)).padEnd(FACE_NOT_FOUND_MESSAGE.length, " ")
                 })
-                updateInference(result.rotation.yaw * 100 - 10);
+                updateInference(result.rotation.yaw * 100 - 10 | "Face Not found" );
             } else {
                 setFaceAngles({
                     pitch: FACE_NOT_FOUND_MESSAGE,
