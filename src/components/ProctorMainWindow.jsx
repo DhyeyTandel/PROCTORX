@@ -1,6 +1,9 @@
 import { useRef, useEffect, useState } from "react";
 import { FilesetResolver, FaceLandmarker } from "@mediapipe/tasks-vision";
 import { computeHeadPose } from "../utils/headPoseUtils.js";
+import { motion } from "framer-motion";
+import { Camera, AlertTriangle, CheckCircle, XCircle, Settings, Home } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function ProctorMainWindow() {
 
@@ -17,15 +20,6 @@ export default function ProctorMainWindow() {
     });
     const [inference, setInference] = useState("");
 
-    function updateInference(yaw) {
-        if (yaw > 25)
-            setInference("Looking Right");
-        else if (yaw < -25)
-            setInference("Looking Left");
-        else
-            setInference("Focused");
-    }
-
     useEffect(() => {
         const init = async () => {
             // 1. Load wasm files
@@ -40,6 +34,7 @@ export default function ProctorMainWindow() {
                         "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
                 },
                 runningMode: "VIDEO",
+                numFaces: 5,
             });
 
             faceLandmarkerRef.current = faceLandmarker;
@@ -75,21 +70,39 @@ export default function ProctorMainWindow() {
                 timestamp
             );
 
-            if (results.faceLandmarks[0]) {
-                let key_landmarks = KEY_LANDMARK_INDICES.map(key_index => results.faceLandmarks[0][key_index]);
-                let result = await computeHeadPose(key_landmarks)
+            if (results.faceLandmarks.length > 1) {
+                setInference("Multiple Faces Detected");
                 setFaceAngles({
-                    pitch: String(Math.trunc(result.rotation.pitch * 100)).padEnd(FACE_NOT_FOUND_MESSAGE.length, " "),
-                    yaw: String((Math.trunc(result.rotation.yaw * 100) - 10)).padEnd(FACE_NOT_FOUND_MESSAGE.length, " "),
-                    roll: String(Math.trunc(result.rotation.roll * 100)).padEnd(FACE_NOT_FOUND_MESSAGE.length, " ")
-                })
-                updateInference(result.rotation.yaw * 100 - 10 | "Face Not found" );
-            } else {
+                    pitch: "---",
+                    yaw: "---",
+                    roll: "---"
+                });
+            } else if (results.faceLandmarks.length === 0) {
+                setInference("Face Not Found");
                 setFaceAngles({
                     pitch: FACE_NOT_FOUND_MESSAGE,
                     yaw: FACE_NOT_FOUND_MESSAGE,
                     roll: FACE_NOT_FOUND_MESSAGE
-                })
+                });
+            } else { // Exactly one face
+                let key_landmarks = KEY_LANDMARK_INDICES.map(key_index => results.faceLandmarks[0][key_index]);
+                let result = await computeHeadPose(key_landmarks);
+                
+                const yaw = result.rotation.yaw * 100 - 10;
+                
+                setFaceAngles({
+                    pitch: String(Math.trunc(result.rotation.pitch * 100)).padEnd(FACE_NOT_FOUND_MESSAGE.length, " "),
+                    yaw: String(Math.trunc(yaw)).padEnd(FACE_NOT_FOUND_MESSAGE.length, " "),
+                    roll: String(Math.trunc(result.rotation.roll * 100)).padEnd(FACE_NOT_FOUND_MESSAGE.length, " "),
+                });
+
+                if (yaw > 25) {
+                    setInference("Looking Right");
+                } else if (yaw < -25) {
+                    setInference("Looking Left");
+                } else {
+                    setInference("Focused");
+                }
             }
         }
         requestAnimationFrame(detectFace);
@@ -100,7 +113,7 @@ export default function ProctorMainWindow() {
             <div className={`
             flex flex-row justify-around items-center
             w-full h-full 
-            ${faceAngles.yaw > 25 || faceAngles.yaw < -25 || faceAngles.yaw === "Face Not Found" ? "bg-red-500" : ""} `}>
+            ${inference !== "Focused" && inference !== "" ? "bg-red-500" : ""} `}>
                 <div className="
                 flex flex-col items-center gap-20 flex-1
                 h-full
