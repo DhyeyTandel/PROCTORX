@@ -1,4 +1,6 @@
-# ExamVision Client
+# PROCTORX
+
+> Product name: ExamVision Client.
 
 A web application for online exam proctoring that uses your computer's camera to monitor students during exams. Built with React and computer vision technology.
 
@@ -17,7 +19,7 @@ Download and install Node.js from [https://nodejs.org](https://nodejs.org) (vers
 ### Step 2: Get the code
 ```bash
 git clone <your-repo-url>
-cd exam-vision-client
+cd PROCTORX
 ```
 
 ### Step 3: Install dependencies
