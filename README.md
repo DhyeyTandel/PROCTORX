@@ -9,16 +9,16 @@ A web application for online exam proctoring that uses your computer's camera to
 - Monitors students taking online exams using their webcam
 - Detects if students are looking away from the screen
 - Provides a dashboard for both students and administrators
-- Secure login system with different user roles
+- Demo-only client-side login with role-specific UI
 
 ## How to run this project
 
 ### Step 1: Install Node.js
-Download and install Node.js from [https://nodejs.org](https://nodejs.org) (version 16 or newer)
+Download and install Node.js from [https://nodejs.org](https://nodejs.org) (version 20.19+ or 22.12+).
 
 ### Step 2: Get the code
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/DhyeyTandel/PROCTORX.git
 cd PROCTORX
 ```
 
@@ -35,9 +35,9 @@ npm run dev
 ### Step 5: Open in browser
 Go to http://localhost:5173 in your web browser
 
-## Test accounts
+## Demo-only test accounts
 
-Use these accounts to test the application:
+Use these accounts to test the client-side prototype:
 
 **Administrator account:**
 - Email: admin@examvision.com
@@ -46,6 +46,8 @@ Use these accounts to test the application:
 **Student account:**
 - Email: student@examvision.com
 - Password: student123
+
+> **Authentication note:** The current login and registration flow is a browser-only mock backed by `localStorage`; it is not secure authentication and must not be used for real exam accounts.
 
 ## How to use
 
